@@ -1,0 +1,71 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">BeerTrackingSystem</a>
+    </div>
+</div>
+
+<input id="navbarToggler" type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All" onclick="navbarClose()">
+                <span class="bi bi-house-door-fill" aria-hidden="true" style="vertical-align: middle;"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="stock" Match="NavLinkMatch.All" onclick="navbarClose()">
+                <span class="bi bi-list" aria-hidden="true"></span> Stock
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="javascript:" Match="NavLinkMatch.Prefix" @onclick="ToggleSettingsMenu">
+                <span class="bi bi-gear" aria-hidden="true"></span> Settings
+            </NavLink>
+            @if (showSettingsSubMenu)
+            {
+                <ul class="submenu">
+                    <li>
+                        <NavLink class="nav-link" href="settings-connection" Match="NavLinkMatch.All" onclick="navbarClose()">
+                            <span class="bi bi-list" aria-hidden="true"></span> Connection
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink class="nav-link" href="settings-user" Match="NavLinkMatch.All" onclick="navbarClose()">
+                            <span class="bi bi-list" aria-hidden="true"></span> User
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+
+        @if (loggedin == true)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="logoff" Match="NavLinkMatch.All" onclick="navbarClose()">
+                    <span class="bi bi-box-arrow-right" aria-hidden="true"></span> Logoff
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="login" Match="NavLinkMatch.All" onclick="navbarClose()">
+                    <span class="bi bi-box-arrow-in-left" aria-hidden="true"></span> Login
+                </NavLink>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+    private bool loggedin = false;
+    private bool showSettingsSubMenu = false;
+
+    void ToggleSettingsMenu()
+    {
+        showSettingsSubMenu = !showSettingsSubMenu;
+    }
+
+    string SubMenuStyle => showSettingsSubMenu ? "" : "display: none;";
+}
