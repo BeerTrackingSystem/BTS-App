@@ -2,11 +2,59 @@
 
 <center><h1>Settings - Connection</h1></center>
 
-<label for="textInput">API URL:</label>
-<input id="textInput" type="text" />
+<form>
+    <div class="form-group row">
+        <label for="api_url" class="col-sm-1 col-form-label">Api-Url:</label>
+        <div class="col-sm-10">
+            <input @bind-value="@keyValuePairs["api_url"]" type="text" class="form-control" id="api_url">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="api_key" class="col-sm-1 col-form-label">Api-Key:</label>
+        <div class="col-sm-10">
+            <input @bind-value="@keyValuePairs["api_key"]" type="text" class="form-control" id="api_key">
+        </div>
+    </div>
+    <!--For Testing-->
+    <div class="form-group row">
+        <label for="sessionid" class="col-sm-1 col-form-label">SessionID:</label>
+        <div class="col-sm-10">
+            <input @bind-value="@keyValuePairs["sessionid"]" type="text" class="form-control" id="sessionid">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="user" class="col-sm-1 col-form-label">User:</label>
+        <div class="col-sm-10">
+            <input @bind-value="@keyValuePairs["user"]" type="text" class="form-control" id="user">
+        </div>
+    </div>
+    <!--/Testing-->
+</form>
 
-<button>Speichern</button>
+<button @onclick="SaveVariables" class="btn btn-primary">Update</button>
 
 @code {
-    
+    private static Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+
+    private static void SaveVariables()
+    {
+        Misc.SaveVariables(keyValuePairs);
+        SetVariables();
+    }
+
+    private static void SetVariables()
+    {
+        keyValuePairs["api_url"] = Preferences.Default.Get("api_url", "Unknown URL");
+        keyValuePairs["api_key"] = Preferences.Default.Get("api_key", "Unknown KEY");
+        keyValuePairs["sessionid"] = Preferences.Default.Get("sessionid", "Unknown SessionID");
+        keyValuePairs["user"] = Preferences.Default.Get("user", "Unknown User");
+    }
 }
+
+<!--DoAtInit-->
+    @code {
+        protected override void OnInitialized()
+        {
+          SetVariables();
+        }
+    }

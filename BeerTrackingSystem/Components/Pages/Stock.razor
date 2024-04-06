@@ -2,34 +2,52 @@
 
 <center><h1>Current Stock:</h1></center>
 <br />
-@if (ResponseStatus && !string.IsNullOrEmpty(ResponseContent))
-{
-    <center><h2>@ResponseContent</h2></center>
-}
+<center><h2>@Preferences.Default.Get("current_stock", "000")</h2></center>
 
 <center>
     <input @bind-value="newStock" type="number" class="form-control w-auto">
     <br />
-    <button @onclick="SetCurrentStock" class="btn btn-primary">Update</button>
+    <button @onclick="async () => await ApiSets.SetCurrentStock(newStock)" class="btn btn-primary">Update</button>
 </center>
 
-<!--ErrorPopup-->
-@if (Popups.ShowErrorPopup)
+<!--ErrorPopups-->
+@if (Popups.ShowGetErrorPopup)
 {
     <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Connection Error</h5>
-                    <button type="button" class="btn btn-close" @onclick="Popups.CloseErrorPopup">
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseGetErrorPopup">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    @ResponseError
+                    @ApiGets.ResponseError
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseErrorPopup">Close</button>
+                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseGetErrorPopup">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Popups.ShowSetErrorPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Connection Error</h5>
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseSetErrorPopup">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ApiSets.ResponseError
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseSetErrorPopup">Close</button>
                 </div>
             </div>
         </div>
@@ -38,67 +56,7 @@
 
 @code {
     <!--Variables-->
-    private bool ResponseStatus;
-    private string ResponseContent = "";
-    private string ResponseError = "";
-    private string newStock = "";
-
-    <!--GetCurrentStock-->
-    private async Task GetCurrentStock()
-    {
-        var formData = new MultipartFormDataContent
-                {
-                    { new StringContent("get"), "calltype" },
-                    { new StringContent("currentstock"), "callitem" }
-                };
-
-        var Response = await WebCall.MakeApiCall(formData);
-
-        ResponseStatus = Response.Item1;
-
-        if (ResponseStatus)
-        {
-            ResponseContent = Response.Item2;
-        }
-        else
-        {
-            ResponseError = Response.Item2;
-            Popups.OpenErrorPopup();
-        }
-    }
-
-    <!--SetCurrentStock-->
-    private async Task SetCurrentStock()
-    {
-        if (!string.IsNullOrEmpty(newStock))
-        {
-            var formData = new MultipartFormDataContent
-                {
-                    { new StringContent("set"), "calltype" },
-                    { new StringContent("currentstock"), "callitem" },
-                    { new StringContent(newStock), "value" }
-                };
-            var Response = await WebCall.MakeApiCall(formData);
-
-            ResponseStatus = Response.Item1;
-
-            if (ResponseStatus)
-            {
-                await GetCurrentStock();
-            }
-            else
-            {
-                ResponseError = Response.Item2;
-                Popups.OpenErrorPopup();
-            }
-            newStock = "";
-        }
-        else
-        {
-            ResponseError = "Please correct your input!";
-            Popups.OpenErrorPopup();
-        }
-    }
+    public static string newStock = "";
 }
 
 <!--DoAtInit-->
@@ -106,6 +64,6 @@
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(1);
-        await GetCurrentStock();
+        await ApiGets.GetCurrentStock();
     }
 }
