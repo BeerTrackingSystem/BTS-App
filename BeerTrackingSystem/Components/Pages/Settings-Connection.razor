@@ -15,20 +15,12 @@
             <input @bind-value="@keyValuePairs["api_key"]" type="text" class="form-control" id="api_key">
         </div>
     </div>
-    <!--For Testing-->
-    <div class="form-group row">
-        <label for="sessionid" class="col-sm-1 col-form-label">SessionID:</label>
-        <div class="col-sm-10">
-            <input @bind-value="@keyValuePairs["sessionid"]" type="text" class="form-control" id="sessionid">
-        </div>
-    </div>
     <div class="form-group row">
         <label for="user" class="col-sm-1 col-form-label">User:</label>
         <div class="col-sm-10">
-            <input @bind-value="@keyValuePairs["user"]" type="text" class="form-control" id="user">
+            <input @bind-value="@keyValuePairs["user"]" type="text" class="form-control" id="user" disabled>
         </div>
     </div>
-    <!--/Testing-->
 </form>
 
 <button @onclick="SaveVariables" class="btn btn-primary">Update</button>
@@ -46,7 +38,6 @@
     {
         keyValuePairs["api_url"] = Preferences.Default.Get("api_url", "Unknown URL");
         keyValuePairs["api_key"] = Preferences.Default.Get("api_key", "Unknown KEY");
-        keyValuePairs["sessionid"] = Preferences.Default.Get("sessionid", "Unknown SessionID");
         keyValuePairs["user"] = Preferences.Default.Get("user", "Unknown User");
     }
 }

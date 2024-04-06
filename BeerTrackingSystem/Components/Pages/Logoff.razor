@@ -1,3 +1,47 @@
 ﻿@page "/logoff"
+@inject NavigationManager NavigationManager
 
-<center><h1>Logoff</h1></center>
+@if (Popups.ShowConfirmPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Popups.ConfirmPopupTitle</h5>
+                    <button type="button" class="btn btn-close" @onclick="cancelLogoff">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @Popups.ConfirmPopupContent
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="cancelLogoff">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="doLogoff">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private async void doLogoff()
+    {
+        await ApiAuths.AuthLogoff();
+        NavigationManager.NavigateTo("/");
+        NavigationManager.Refresh();
+    }
+
+    private void cancelLogoff()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
+
+<!--DoAtInit-->
+@code {
+    protected override void OnInitialized()
+    {
+        Popups.OpenConfirmPopup();
+    }
+}

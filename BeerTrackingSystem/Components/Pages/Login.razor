@@ -1,3 +1,49 @@
 ﻿@page "/login"
+@inject NavigationManager NavigationManager
+@if (Popups.ShowAuthErrorPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Connection Error</h5>
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseAuthErrorPopup">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ApiAuths.ResponseError
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseAuthErrorPopup">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <center><h1>Login</h1></center>
+
+<center>
+    <label for="user">User:</label>
+    <input @bind-value="user" id="user" type="text" class="form-control w-auto">
+    <label for="password">Password:</label>
+    <input @bind-value="password" id="password" type="password" class="form-control w-auto">
+    <br />
+    <button @onclick="doLogin" class="btn btn-primary">Login</button>
+</center>
+
+@code {
+    private static string user = "";
+    private static string password = "";
+
+    private async void doLogin()
+    {
+        await ApiAuths.AuthLogin(user, password);
+        if (ApiAuths.ResponseStatus)
+        {
+            NavigationManager.NavigateTo("/");
+            NavigationManager.Refresh();
+        }
+    }
+}

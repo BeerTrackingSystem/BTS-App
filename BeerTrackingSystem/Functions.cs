@@ -1,6 +1,7 @@
 ﻿using BeerTrackingSystem.Components.Pages;
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BeerTrackingSystem
 {
@@ -25,7 +26,7 @@ namespace BeerTrackingSystem
                 {
                     var calltype = calltypeContent.ReadAsStringAsync().Result;
                     var callitem = callitemContent.ReadAsStringAsync().Result;
-                    if (calltype == "set" || callitem == "sessionstate")
+                    if (calltype == "set" || callitem == "sessionstate" || callitem == "logoff")
                     {
                         callData.Add(new StringContent(Preferences.Default.Get("sessionid", "Unknown SessionID")), "sessionid");
                         callData.Add(new StringContent(Preferences.Default.Get("user", "Unknown User")), "user");
@@ -60,8 +61,20 @@ namespace BeerTrackingSystem
     }
     internal class Popups
     {
+        public static bool ShowAuthErrorPopup = false;
         public static bool ShowGetErrorPopup = false;
         public static bool ShowSetErrorPopup = false;
+        public static bool ShowConfirmPopup = false;
+        public static string ConfirmPopupTitle = "Confirmation";
+        public static string ConfirmPopupContent = "Are you sure?";
+        public static void OpenAuthErrorPopup()
+        {
+            ShowAuthErrorPopup = true;
+        }
+        public static void CloseAuthErrorPopup()
+        {
+            ShowAuthErrorPopup = false;
+        }
         public static void OpenGetErrorPopup()
         {
             ShowGetErrorPopup = true;
@@ -79,6 +92,65 @@ namespace BeerTrackingSystem
         public static void CloseSetErrorPopup()
         {
             ShowSetErrorPopup = false;
+        }
+
+        public static void OpenConfirmPopup()
+        {
+            ShowConfirmPopup = true;
+        }
+    }
+    internal class ApiAuths
+    {
+        public static bool ResponseStatus;
+        public static string ResponseContent = "";
+        public static string ResponseError = "";
+        public static bool item1;
+        public static string item2 = "";
+        public static async Task AuthLogoff()
+        {
+            var formData = new MultipartFormDataContent
+                {
+                    { new StringContent("auth"), "calltype" },
+                    { new StringContent("logoff"), "callitem" }
+                };
+            _ = await WebCall.MakeApiCall(formData);
+
+            Preferences.Default.Remove("user");
+            Preferences.Default.Remove("sessionid");
+            ApiGets.SessionState = false;
+        }
+        public static async Task AuthLogin(string user, string password)
+        {
+            if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
+            {
+                var formData = new MultipartFormDataContent
+                {
+                    { new StringContent("auth"), "calltype" },
+                    { new StringContent("login"), "callitem" },
+                    { new StringContent(user), "loginuser" },
+                    { new StringContent(password), "loginpassword" }
+                };
+                var Response = await WebCall.MakeApiCall(formData);
+
+                ApiAuths.ResponseStatus = Response.Item1;
+
+                if (ApiAuths.ResponseStatus)
+                {
+                    Preferences.Default.Set("user", user);
+                    Preferences.Default.Set("sessionid", Response.Item2);
+                    ApiGets.SessionState = true;
+                }
+                else
+                {
+                    ApiAuths.ResponseError = Response.Item2;
+                    Popups.OpenAuthErrorPopup();
+                }
+            }
+            else
+            {
+                ApiAuths.ResponseError = "Please correct your input!";
+                Popups.OpenAuthErrorPopup();
+            }
         }
     }
     internal class ApiGets
