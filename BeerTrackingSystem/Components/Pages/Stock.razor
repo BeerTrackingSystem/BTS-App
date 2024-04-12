@@ -4,11 +4,14 @@
 <br />
 <center><h2>@Preferences.Default.Get("current_stock", "000")</h2></center>
 
-<center>
-    <input @bind-value="newStock" type="number" class="form-control w-auto">
-    <br />
-    <button @onclick="async () => await ApiSets.SetCurrentStock(newStock)" class="btn btn-primary">Update</button>
-</center>
+@if (ApiGets.SessionState)
+{
+    <center>
+        <input @bind-value="newStock" type="number" class="form-control w-auto">
+        <br />
+        <button @onclick="async () => await ApiSets.SetCurrentStock(newStock)" class="btn btn-primary">Update</button>
+    </center>
+}
 
 <!--ErrorPopups-->
 @if (Popups.ShowGetErrorPopup)

@@ -1,3 +1,52 @@
 ﻿@page "/settings-user"
 
 <center><h1>Settings - User</h1></center>
+
+<table class="table-responsive">
+    <tr>
+        <td>
+            <label for="show_motd" class="form-check-label">Show MotD:</label>
+        </td>
+        <td>
+            <input type="checkbox" class="form-check-input" id="show_motd" @onchange="UpdateShowMotd" checked="@((keyValuePairs["show_motd"] == "true") ? "checked" : null)">
+        </td>
+    </tr>
+</table>
+
+<button @onclick="SaveVariables" class="btn btn-primary">Update</button>
+
+@code {
+    private static Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+    private static string show_motd = "";
+
+    private static void UpdateShowMotd()
+    {
+        if (keyValuePairs["show_motd"] == "true")
+        {
+            keyValuePairs["show_motd"] = "false";
+        }
+        else
+        {
+            keyValuePairs["show_motd"] = "true";
+        }
+    }
+
+    private static void SaveVariables()
+    {
+        Misc.SaveVariables(keyValuePairs);
+        SetVariables();
+    }
+
+    private static void SetVariables()
+    {
+        keyValuePairs["show_motd"] = Preferences.Default.Get("show_motd", "true");
+    }
+}
+
+<!--DoAtInit-->
+@code {
+    protected override void OnInitialized()
+    {
+        SetVariables();
+    }
+}

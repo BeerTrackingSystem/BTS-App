@@ -1,13 +1,54 @@
 ﻿@page "/"
 
-<center><h1>Hello, world!</h1></center>
+<center><h1>@Preferences.Default.Get("main_page_heading", "BeerTrackingSystem")</h1></center>
+@if (@Preferences.Default.Get("show_motd", "true") == "true" )
+{
+    <center><h2>MotD: @Preferences.Default.Get("motd", "No Quote for today.")</h2></center>
+}
+<br />
+@{
+    List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
+    if (Preferences.Default.ContainsKey("current_strikes"))
+    {
+        var jsonData = Preferences.Default.Get("current_strikes", "Unknown Strikes");
+        var deserializedData = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(jsonData);
 
-Welcome to your new app.
+        if (deserializedData != null)
+        {
+            data = deserializedData;
+        }
+    }
+}
 
-@Preferences.Default.Get("api_url", "Unknown URL")
-UND
-@Preferences.Default.Get("api_key", "Unknown Key")
-UND
-@Preferences.Default.Get("sessionid", "Unknown SessionID")
-UND
-@Preferences.Default.Get("user", "Unknown User")
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr class="text-center">
+            <th>Name</th>
+            <th>Strikes</th>
+            <th>Last Pay</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (data != null)
+        {
+            @foreach (var item in data)
+            {
+                <tr class="text-center">
+                    <td>@item["name"]</td>
+                    <td>@item["currentstrikes"]</td>
+                    <td>@item["last_pay"]</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(1);
+        await ApiGets.GetMisc();
+        await ApiGets.GetCurrentStrikes();
+        await ApiGets.GetMotd();
+    }
+}

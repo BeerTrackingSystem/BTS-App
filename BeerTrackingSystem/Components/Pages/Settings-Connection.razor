@@ -2,26 +2,32 @@
 
 <center><h1>Settings - Connection</h1></center>
 
-<form>
-    <div class="form-group row">
-        <label for="api_url" class="col-sm-1 col-form-label">Api-Url:</label>
-        <div class="col-sm-10">
+<table class="table-responsive">
+    <tr>
+        <td>
+            <label for="api_url" class="form-label">Api-Url:</label>
+        </td>
+        <td>
             <input @bind-value="@keyValuePairs["api_url"]" type="text" class="form-control" id="api_url">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="api_key" class="col-sm-1 col-form-label">Api-Key:</label>
-        <div class="col-sm-10">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="api_key" class="form-label">Api-Key:</label>
+        </td>
+        <td>
             <input @bind-value="@keyValuePairs["api_key"]" type="text" class="form-control" id="api_key">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="user" class="col-sm-1 col-form-label">User:</label>
-        <div class="col-sm-10">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="user" class="form-label">User:</label>
+        </td>
+        <td>
             <input @bind-value="@keyValuePairs["user"]" type="text" class="form-control" id="user" disabled>
-        </div>
-    </div>
-</form>
+        </td>
+    </tr>
+</table>
 
 <button @onclick="SaveVariables" class="btn btn-primary">Update</button>
 

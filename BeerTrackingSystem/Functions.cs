@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 
 namespace BeerTrackingSystem
 {
@@ -104,8 +105,6 @@ namespace BeerTrackingSystem
         public static bool ResponseStatus;
         public static string ResponseContent = "";
         public static string ResponseError = "";
-        public static bool item1;
-        public static string item2 = "";
         public static async Task AuthLogoff()
         {
             var formData = new MultipartFormDataContent
@@ -204,6 +203,80 @@ namespace BeerTrackingSystem
                 {
                     ApiGets.SessionState = false;
                 }
+            }
+        }
+        public static async Task GetCurrentStrikes()
+        {
+            var formData = new MultipartFormDataContent
+                {
+                    { new StringContent("get"), "calltype" },
+                    { new StringContent("currentstrikes"), "callitem" }
+                };
+
+            var Response = await WebCall.MakeApiCall(formData);
+
+            ApiGets.ResponseStatus = Response.Item1;
+
+            if (ResponseStatus)
+            {
+                Preferences.Default.Set("current_strikes", Response.Item2);
+            }
+            else
+            {
+                ApiGets.ResponseError = Response.Item2;
+                Popups.OpenGetErrorPopup();
+            }
+        }
+        public static async Task GetMisc()
+        {
+            var formData = new MultipartFormDataContent
+                {
+                    { new StringContent("get"), "calltype" },
+                    { new StringContent("misc"), "callitem" }
+                };
+
+            var Response = await WebCall.MakeApiCall(formData);
+
+            ApiGets.ResponseStatus = Response.Item1;
+
+            if (ResponseStatus)
+            {
+                ResponseContent = Response.Item2;
+                var deserializedData = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(Response.Item2);
+                if (deserializedData != null)
+                {
+                    foreach (var item in deserializedData)
+                    {
+                        Preferences.Default.Set(item["object"].ToString() + "_" + item["attribute"].ToString(), item["value"].ToString());
+                    }
+                }
+            }
+            else
+            {
+                ApiGets.ResponseError = Response.Item2;
+                Popups.OpenGetErrorPopup();
+            }
+        }
+        public static async Task GetMotd()
+        {
+            var formData = new MultipartFormDataContent
+                {
+                    { new StringContent("get"), "calltype" },
+                    { new StringContent("motd"), "callitem" }
+                };
+
+            var Response = await WebCall.MakeApiCall(formData);
+
+            ApiGets.ResponseStatus = Response.Item1;
+
+            if (ResponseStatus)
+            {
+                Preferences.Default.Set("motd", Response.Item2);
+            }
+            else
+            {
+                ApiGets.ResponseError = Response.Item2;
+                Popups.OpenGetErrorPopup();
             }
         }
     }
