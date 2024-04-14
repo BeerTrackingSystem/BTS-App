@@ -2,14 +2,21 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    background-color: #ffffff;
+    color: #000000;
+    height: 100vh;
 }
+    .page.dark-mode {
+        background-color: #222222;
+        color: #ffffff;
+    }
 
 main {
     flex: 1;
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(180deg, rgb(0, 0, 0) 0%, #001a4a 70%);
 }
 
 .top-row {

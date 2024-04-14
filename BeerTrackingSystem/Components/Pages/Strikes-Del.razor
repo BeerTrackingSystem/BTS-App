@@ -1,0 +1,154 @@
+﻿@page "/strikes-del"
+@inject NavigationManager NavigationManager
+
+@if (Popups.ShowGetErrorPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Connection Error</h5>
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseGetErrorPopup">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ApiGets.ResponseError
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseGetErrorPopup">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Popups.ShowSetErrorPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Connection Error</h5>
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseSetErrorPopup">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ApiSets.ResponseError
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseSetErrorPopup">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<center><h1>Pending Dels:</h1></center>
+
+@{
+    List<Dictionary<string, object>> strikedata = new List<Dictionary<string, object>>();
+    List<Dictionary<string, object>> userdata = new List<Dictionary<string, object>>();
+    if (Preferences.Default.ContainsKey("pendingdelstrikes"))
+    {
+        var jsonData = Preferences.Default.Get("pendingdelstrikes", "Unknown Strikes");
+        var deserializedData = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(jsonData);
+
+        if (deserializedData != null)
+        {
+            strikedata = deserializedData;
+        }
+    }
+    if (Preferences.Default.ContainsKey("all_users"))
+    {
+        var jsonData = Preferences.Default.Get("all_users", "Unknown User");
+        var deserializedData = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(jsonData);
+
+        if (deserializedData != null)
+        {
+            userdata = deserializedData;
+        }
+    }
+}
+
+<div class="table-responsive">
+    <table class="table table-hover @(Misc.darkmode ? "table-dark" : "")">
+        <tbody>
+            <tr>
+                <td>
+                    <select class="form-select" aria-label="select-user" @bind="malefactor">
+                        <option value="" selected>Select the user</option>
+                        @if (userdata != null)
+                        {
+                            @foreach (var item in userdata)
+                            {
+                                <option value="@item["name"]">@item["name"]</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input @bind-value="reason" type="text" class="form-control" placeholder="Reason">
+                </td>
+                <td>
+                    <button class="btn btn-primary" @onclick="delstrike">Delete Strike(s)</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover @(Misc.darkmode ? "table-dark" : "")">
+        <thead>
+            <tr class="text-center">
+                <th>Name</th>
+                <th>Date</th>
+                <th>Validations needed</th>
+                <th>Validations accomplished</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (strikedata != null)
+            {
+                @foreach (var item in strikedata)
+                {
+                    <tr class="text-center">
+                        <td>@item["name"]</td>
+                        <td>@item["date"]</td>
+                        <td>@item["validations_needed"]</td>
+                        <td>@item["validations_acc"]</td>
+                        <td>@item["reason"]</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<footer class="text-muted">
+    <p class="small">Last Update: @Preferences.Default.Get("last_update", "Not updated yet")</p>
+</footer>
+
+@code {
+    public static string malefactor = "";
+    public static string reason = "";
+
+    private async void delstrike()
+    {
+        await ApiSets.SetDelStrike(malefactor, reason);
+        if (ApiSets.ResponseStatus)
+        {
+            NavigationManager.Refresh();
+        }
+    }
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(1);
+        await ApiGets.GetPendingDelStrikes();
+    }
+}

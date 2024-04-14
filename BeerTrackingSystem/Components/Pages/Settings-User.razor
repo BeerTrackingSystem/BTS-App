@@ -1,4 +1,5 @@
 ﻿@page "/settings-user"
+@inject NavigationManager NavigationManager
 
 <center><h1>Settings - User</h1></center>
 
@@ -11,14 +12,25 @@
             <input type="checkbox" class="form-check-input" id="show_motd" @onchange="UpdateShowMotd" checked="@((keyValuePairs["show_motd"] == "true") ? "checked" : null)">
         </td>
     </tr>
+    <tr>
+        <td>
+            <button @onclick="SaveVariables" class="btn btn-primary">Update</button>
+        </td>
+    </tr>
 </table>
-
-<button @onclick="SaveVariables" class="btn btn-primary">Update</button>
+<br />
+<button @onclick="ToggleDarkMode" class="btn btn-primary">Toggle Dark Mode</button>
 
 @code {
     private static Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
     private static string show_motd = "";
 
+    private void ToggleDarkMode()
+    {
+        Misc.SetDarkMode();
+        Misc.GetDarkMode();
+        NavigationManager.NavigateTo("/settings-user");
+    }
     private static void UpdateShowMotd()
     {
         if (keyValuePairs["show_motd"] == "true")

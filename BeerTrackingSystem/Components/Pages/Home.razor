@@ -1,5 +1,69 @@
 ﻿@page "/"
 
+@if (Popups.ShowGetErrorPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Connection Error</h5>
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseGetErrorPopup">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ApiGets.ResponseError
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseGetErrorPopup">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Popups.ShowSetErrorPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Connection Error</h5>
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseSetErrorPopup">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ApiSets.ResponseError
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Popups.CloseSetErrorPopup">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Popups.ShowConfirmPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Popups.ConfirmPopupTitle</h5>
+                    <button type="button" class="btn btn-close" @onclick="Popups.CloseConfirmPopup">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @Popups.ConfirmPopupContent
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="Popups.CloseConfirmPopup">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <center><h1>@Preferences.Default.Get("main_page_heading", "BeerTrackingSystem")</h1></center>
 @if (@Preferences.Default.Get("show_motd", "true") == "true" )
 {
@@ -20,7 +84,7 @@
     }
 }
 
-<table class="table table-bordered table-hover">
+<table class="table table-bordered table-hover @(Misc.darkmode ? "table-dark" : "")">
     <thead>
         <tr class="text-center">
             <th>Name</th>
@@ -42,6 +106,21 @@
         }
     </tbody>
 </table>
+<br />
+<table class="table">
+    <tr class="text-center">
+        <td>
+            <a href="/strikes-add" class="btn btn-primary">Add Strike</a>
+        </td>
+        <td>
+            <a href="/strikes-del" class="btn btn-primary">Delete Strike</a>
+        </td>
+    </tr>
+</table>
+
+<footer class="text-muted">
+    <p class="small">Last Update: @Preferences.Default.Get("last_update", "Not updated yet")</p>
+</footer>
 
 @code {
     protected override async Task OnInitializedAsync()
@@ -50,5 +129,6 @@
         await ApiGets.GetMisc();
         await ApiGets.GetCurrentStrikes();
         await ApiGets.GetMotd();
+        Misc.GetDarkMode();
     }
 }

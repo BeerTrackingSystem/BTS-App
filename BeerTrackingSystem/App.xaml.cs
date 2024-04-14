@@ -5,6 +5,7 @@
         protected override async void OnStart()
         {
             await ApiGets.GetSessionState();
+            Misc.GetDarkMode();
         }
         public App()
         {

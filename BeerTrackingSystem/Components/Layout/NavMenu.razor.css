@@ -72,6 +72,9 @@
 .nav-scrollable {
     display: none;
 }
+    .nav-scrollable ul {
+        list-style-type: none;
+    }
 
 .navbar-toggler:checked ~ .nav-scrollable {
     display: block;
