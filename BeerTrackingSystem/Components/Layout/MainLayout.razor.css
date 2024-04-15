@@ -11,6 +11,11 @@
         color: #ffffff;
     }
 
+.body.dark-mode {
+    background-color: #222222;
+    color: #ffffff;
+}
+
 main {
     flex: 1;
 }

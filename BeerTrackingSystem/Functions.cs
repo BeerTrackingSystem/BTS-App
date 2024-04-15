@@ -9,12 +9,14 @@ namespace BeerTrackingSystem
 {
     internal class WebCall
     {
-        public static async Task<(bool,string)> MakeApiCall(MultipartFormDataContent formData)
+        public static async Task<(bool, string)> MakeApiCall(MultipartFormDataContent formData)
         {
             try
             {
                 // Erstellen einer HttpClient-Instanz
                 using HttpClient client = new();
+
+
                 // URL, an die die Anfrage gesendet werden soll
                 string url = Preferences.Default.Get("api_url", "Unknown URL");
 
@@ -35,7 +37,7 @@ namespace BeerTrackingSystem
                     }
                 }
 
-                // Durchführen des POST-Webaufrufs mit Formulardaten
+
                 HttpResponseMessage response = await client.PostAsync(url, callData);
 
                 // Überprüfen der Antwort des Servers
@@ -71,7 +73,7 @@ namespace BeerTrackingSystem
         public static string ConfirmPopupContent = "";
         public static void OpenAuthErrorPopup()
         {
-            ShowAuthErrorPopup = true;
+                ShowAuthErrorPopup = true;
         }
         public static void CloseAuthErrorPopup()
         {
@@ -79,7 +81,10 @@ namespace BeerTrackingSystem
         }
         public static void OpenGetErrorPopup()
         {
-            ShowGetErrorPopup = true;
+            if (Preferences.Default.Get("api_url", "Unknown URL") != "")
+            {
+                ShowGetErrorPopup = true;
+            }
         }
 
         public static void CloseGetErrorPopup()
@@ -494,7 +499,6 @@ namespace BeerTrackingSystem
                 Misc.darkmode = true;
             }
         }
-        [JSInvokable]
         public static bool GetDarkModeBool()
         {
             if (Preferences.Default.Get("darkmode", "false") == "false")

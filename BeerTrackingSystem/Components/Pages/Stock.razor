@@ -13,7 +13,7 @@
     </center>
 }
 
-<footer class="text-muted">
+<footer class="text-muted" style="@(Misc.darkmode ? "color: #888 !important;" : "")">
     <p class="small">Last Update: @Preferences.Default.Get("last_update", "Not updated yet")</p>
 </footer>
 
@@ -21,7 +21,7 @@
 <!--ErrorPopups-->
 @if (Popups.ShowGetErrorPopup)
 {
-    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+    <div class="modal" data-bs-theme="@(Misc.darkmode ? "dark" : "")" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -42,7 +42,7 @@
 }
 @if (Popups.ShowSetErrorPopup)
 {
-    <div class="modal" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
+    <div class="modal" data-bs-theme="@(Misc.darkmode ? "dark" : "")" tabindex="-1" role="dialog" style="display:block;background-color:rgba(0,0,0,0.5)">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
