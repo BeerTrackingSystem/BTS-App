@@ -128,10 +128,10 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
+        Misc.GetDarkMode();
         await Task.Delay(1);
         await ApiGets.GetMisc();
         await ApiGets.GetCurrentStrikes();
         await ApiGets.GetMotd();
-        Misc.GetDarkMode();
     }
 }
