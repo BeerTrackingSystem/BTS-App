@@ -126,9 +126,13 @@
 </footer>
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Misc.GetDarkMode();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
         await Task.Delay(1);
         await ApiGets.GetMisc();
         await ApiGets.GetCurrentStrikes();

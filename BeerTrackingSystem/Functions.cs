@@ -469,7 +469,7 @@ namespace BeerTrackingSystem
     }
     internal class Misc
     {
-        public static bool darkmode = false;
+        public static bool darkmode = Preferences.Default.Get("darkmode", "false") == "true";
         public static void SaveVariables(Dictionary<string, string> keyValuePairs)
         {
             foreach (KeyValuePair<string, string> pair in keyValuePairs)
